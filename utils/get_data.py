@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join, splitext
 import xml.etree.ElementTree as ET
+import scipy.stats as ST
 
 LEN = 2000
 PART_LEN = 10
@@ -63,18 +64,21 @@ class Dataset:
             extra_len = len(signals[2]) % LEN
             eeg1 = signals[2]
             eeg2 = signals[7]
+            print("EEG shape: {}".format(eeg1.shape))
             eeg1 = np.reshape(eeg1[:-extra_len], (-1, LEN))
             eeg2 = np.reshape(eeg2[:-extra_len], (-1, LEN))
             eeg_concatenated = np.concatenate((eeg1, eeg2), axis=1)
             X = np.concatenate((X, eeg_concatenated), axis=0)
             total_label = self.get_annotation(patient_filename)
-            print("X shape: {}, y shape: {}".format(eeg_concatenated.shape, total_label.shape))
 
             label_extra_len = len(total_label) % SEC_CHUNK
             total_label = total_label[:-label_extra_len]
+            total_label = np.reshape(total_label, (-1, SEC_CHUNK))
+            labels = ST.mode(total_label, axis=1)[0]
+            labels = np.squeeze(labels)
 
-            print("X shape: {}, y shape: {}".format(eeg_concatenated.shape, total_label.shape))
-            # y = np.concatenate((y, ), axis=0)
+            print("X shape: {}, y shape: {}".format(eeg_concatenated.shape, labels.shape))
+            y = np.concatenate((y, labels), axis=0)
 
         return X, y
 
