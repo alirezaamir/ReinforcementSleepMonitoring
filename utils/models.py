@@ -14,9 +14,9 @@ vector_len = 4000
 def my_residual_block(in_cnv, stage: str, filter_size, stride=1):
     bn1 = BatchNormalization(name='BN1_' + stage)(in_cnv)
     relu1 = ReLU(name='ReLU1_' + stage)(bn1)
-    drop = Dropout(rate = 0.1, name='Drop_' + stage)(relu1)
+    # drop = Dropout(rate = 0.1, name='Drop_' + stage)(relu1)
 
-    cnv2 = Conv1D(filter_size, strides=stride, kernel_size=5, padding='same', name='Conv2_' + stage)(drop)
+    cnv2 = Conv1D(filter_size, strides=stride, kernel_size=5, padding='same', name='Conv2_' + stage)(relu1)
     bn2 = BatchNormalization(name='BN2_' + stage)(cnv2)
     relu2 = ReLU(name='ReLU2_' + stage)(bn2)
 
