@@ -84,6 +84,11 @@ class Dataset:
             else:
                 print("Shape inconsistent in {}".format(patient_filename))
 
+        y = np.where(y==4, 3, y)
+        y = np.where(y==5, 4, y)
+        unique, counts = np.unique(y, return_counts=True)
+        print("count: {}".format(dict(zip(unique, counts))))
+
         return X, y
 
 

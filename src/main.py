@@ -10,7 +10,7 @@ from sklearn.utils import shuffle
 from tensorflow.keras.utils import to_categorical
 import datetime
 
-OUTPUT_NUM = 6
+OUTPUT_NUM = 5
 version_code = 4
 
 
@@ -30,7 +30,7 @@ def training():
         y_val = to_categorical(y_val, OUTPUT_NUM)
 
         print("Train shape: {}, Validation shape: {}".format(X_train.shape, X_val.shape))
-        sleep_model.fit(X_train, y_train, batch_size=64, epochs=10*(partition+1), initial_epoch=20*partition,
+        sleep_model.fit(X_train, y_train, batch_size=64, epochs=10*(partition+1), initial_epoch=10*partition,
                         validation_data=(X_val, y_val), callbacks=[tensorboard_callback])
 
         sleep_model.save('outputs/model_v{}'.format(version_code))
@@ -39,5 +39,4 @@ def training():
 
 
 if __name__ == '__main__':
-    tf.config.experimental.set_visible_devices([], 'GPU')
     training()

@@ -8,9 +8,9 @@ from tensorflow.keras.models import load_model
 
 
 def main():
-    sleep_model = load_model('../outputs/model.h5')
+    sleep_model = load_model('../outputs/model_v4')
     dataset = dt.Dataset('../')
-    predict_list = np.zeros((0, 6))
+    predict_list = np.zeros((0, 5))
     groundtruth = np.zeros(0)
     for partition in range(16):
         X_test, y_test = dataset.get_eeg_data(partition, 'test')
