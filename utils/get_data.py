@@ -50,15 +50,17 @@ class Dataset:
                 # print("Start:{},\nDuration:{}\nstage:{}\n".format(start, stage_duration, stage))
         return labels
 
-    def get_eeg_data(self, part_num, data_type=' train'):
+    def get_eeg_data(self, part_num, data_type=' train', single_patient=False):
         if self.filenames_dict[data_type] is None:
             self.filenames_dict[data_type] = self.get_edf_files(data_type)
+
+        num_of_patients = 1 if single_patient else PART_LEN
 
         path = self.root_path + 'input/shhs2/' + data_type +'/'
         data = self.filenames_dict[data_type]
         X = np.zeros((0, LEN * 2))
         y = np.zeros((0))
-        for patient_filename in data[PART_LEN * part_num:PART_LEN * (part_num + 1)]:
+        for patient_filename in data[num_of_patients * part_num:num_of_patients * (part_num + 1)]:
             print("PATIENT: {}".format(patient_filename))
             signals, signal_headers, header = pyedflib.highlevel.read_edf(path + patient_filename)
             extra_len = len(signals[2]) % LEN
