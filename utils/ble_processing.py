@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter,filtfilt
+import pickle
 
 
 def butter_highpass_filter(data, low, high, fs, order= 3):
@@ -21,6 +22,7 @@ def read_data():
         for l in lines:
             line_list.append(l.hex())
         raw_data = "".join(line_list)
+        print("raw data:{}".format(len(raw_data)))
         index_list= []
         index_pre = 0
         data = []
@@ -70,14 +72,28 @@ def filtering_and_processing(signal):
     return EEG_filtered
 
 
+def save_pickles(eeg1, eeg2):
+
+    print("shapes: {}, {}".format(eeg1.shape, eeg2.shape))
+    eeg1_divisible_len = len(eeg1)- (len(eeg1)% 2000)
+    eeg1_divisible = eeg1[:eeg1_divisible_len]
+    eeg2_divisible_len = len(eeg2) - (len(eeg2) % 2000)
+    eeg2_divisible = eeg2[:eeg2_divisible_len]
+    eeg1_reshaped = np.reshape(eeg1_divisible, (-1, 2000))
+    eeg2_reshaped = np.reshape(eeg2_divisible, (-1, 2000))
+
+    eeg_concat = np.concatenate((eeg1_reshaped, eeg2_reshaped), axis=1)
+    print("shapes: {}, {}".format(eeg1_reshaped.shape, eeg2_reshaped.shape))
+    print("shapes: {}".format(eeg_concat.shape))
+    filename = '../input/ble/eeg.pickle'
+    pickle.dump({'eeg': eeg_concat}, open(filename, 'wb'))
+
+
 def main():
     EEG1 , EEG2 = read_data()
 
     EEG1_filtered = filtering_and_processing(EEG1)
     EEG2_filtered = filtering_and_processing(EEG2)
-
-    print(EEG1_filtered.shape)
-
 
 
     plt.subplot(211)
@@ -92,7 +108,7 @@ def main():
     plt.plot(EEG2_filtered[:2000])
     plt.show()
 
-    # print(EEG2[150000:150200])
+    save_pickles(EEG1_filtered, EEG2_filtered)
 
 
 if __name__ == '__main__':
