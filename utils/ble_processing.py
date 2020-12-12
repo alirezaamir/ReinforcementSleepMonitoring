@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter,filtfilt
 import pickle
+from sklearn import preprocessing
 
 
 def butter_highpass_filter(data, low, high, fs, order= 3):
@@ -69,6 +70,9 @@ def filtering_and_processing(signal):
         filtered = butter_highpass_filter(chunk, 1, 30, 125)
         EEG_filtered = np.concatenate((EEG_filtered, filtered))
 
+    EEG_filtered = preprocessing.scale(EEG_filtered)
+    EEG_filtered = (EEG_filtered * 40) + 1
+    print("mean={}, std={}".format(np.mean(EEG_filtered), np.std(EEG_filtered)))
     return EEG_filtered
 
 
@@ -95,17 +99,16 @@ def main():
     EEG1_filtered = filtering_and_processing(EEG1)
     EEG2_filtered = filtering_and_processing(EEG2)
 
-
     plt.subplot(211)
-    plt.plot(EEG1[:2000])
+    plt.plot(EEG1[:15000])
     plt.subplot(212)
-    plt.plot(EEG1_filtered[:2000])
+    plt.plot(EEG1_filtered[:15000])
 
     plt.figure()
     plt.subplot(211)
-    plt.plot(EEG2[:2000])
+    plt.plot(EEG2[:15000])
     plt.subplot(212)
-    plt.plot(EEG2_filtered[:2000])
+    plt.plot(EEG2_filtered[:15000])
     plt.show()
 
     save_pickles(EEG1_filtered, EEG2_filtered)
