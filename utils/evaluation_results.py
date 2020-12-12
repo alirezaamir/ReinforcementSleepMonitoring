@@ -35,23 +35,28 @@ def visualize_output():
     sleep_model = load_model('../outputs/model_v4')
     dataset = dt.Dataset('../')
     X_test, y_test = dataset.get_eeg_data(part_num=1, data_type='test', single_patient=True)
-    X_test = X_test
-    predict = sleep_model.predict(X_test[:1800])
+    predict = sleep_model.predict(X_test[:])
     predict_class = np.argmax(predict, axis=1)
     print(predict_class.shape)
-
+    print("std:{}, mean:{}".format(np.std(X_test[:50], axis=1), np.mean(X_test[:50], axis=1)))
+    return
     fs = 1/16  # sample rate, Hz
     cutoff = 1/2400
     filtered_predict = butter_lowpass_filter(predict_class, cutoff, fs)
 
     plt.figure()
     plt.subplot(311)
-    plt.plot(y_test[:1800])
+    plt.plot(y_test[:])
     plt.subplot(312)
     plt.plot(predict_class)
     plt.subplot(313)
     plt.plot(filtered_predict)
     plt.show()
+
+
+def predict_benoit():
+    sleep_model = load_model('../outputs/model_v4')
+
 
 
 if __name__ == '__main__':
