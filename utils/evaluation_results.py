@@ -5,6 +5,7 @@ import utils.get_data as dt
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from scipy.signal import butter,filtfilt
+import pickle
 
 
 def butter_lowpass_filter(data, cutoff, fs, order= 3):
@@ -38,8 +39,7 @@ def visualize_output():
     predict = sleep_model.predict(X_test[:])
     predict_class = np.argmax(predict, axis=1)
     print(predict_class.shape)
-    print("std:{}, mean:{}".format(np.std(X_test[:50], axis=1), np.mean(X_test[:50], axis=1)))
-    return
+    # print("std:{}, mean:{}".format(np.std(X_test[:50], axis=1), np.mean(X_test[:50], axis=1)))
     fs = 1/16  # sample rate, Hz
     cutoff = 1/2400
     filtered_predict = butter_lowpass_filter(predict_class, cutoff, fs)
@@ -54,12 +54,21 @@ def visualize_output():
     plt.show()
 
 
-def predict_benoit():
+def predict_ble():
     sleep_model = load_model('../outputs/model_v4')
+    filename = '../input/ble/eeg.pickle'
+    data = pickle.load(open(filename, 'rb'))
+    eeg_data = data['eeg']
+    print("shape: {}".format(eeg_data.shape))
 
+    predict = sleep_model.predict(eeg_data)
+    predict_class = np.argmax(predict, axis=1)
+    plt.plot(predict_class)
+    plt.show()
 
 
 if __name__ == '__main__':
     # get_confusion_matrix()
-    tf.config.experimental.set_visible_devices([], 'GPU')
-    visualize_output()
+    # tf.config.experimental.set_visible_devices([], 'GPU')
+    # visualize_output()
+    predict_ble()
