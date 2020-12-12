@@ -52,29 +52,44 @@ def read_data():
         return EEG1_twos_comp, EEG2_twos_comp
 
 
-def main():
-    EEG1 , EEG2 = read_data()
-    EEG2 = EEG2[EEG2 > -2e6]
-    EEG_remove_spikes = EEG2[EEG2 < 2e6]
+def filtering_and_processing(signal):
+    EEG_remove_spikes = signal[np.abs(signal) < 2e6]
 
-    zero_crossing_points = [i for i in range(1, len(EEG_remove_spikes)) if EEG_remove_spikes[i-1] * EEG_remove_spikes[i] < 0]
+    zero_crossing_points = [i for i in range(1, len(EEG_remove_spikes)) if
+                            EEG_remove_spikes[i - 1] * EEG_remove_spikes[i] < 0]
     zero_crossing_points.insert(0, 0)
 
     EEG_filtered = np.zeros(0)
     for point_idx in range(1, len(zero_crossing_points)):
-        start = zero_crossing_points[point_idx-1] + 2
+        start = zero_crossing_points[point_idx - 1] + 2
         end = zero_crossing_points[point_idx] - 2
         chunk = EEG_remove_spikes[start:end]
         filtered = butter_highpass_filter(chunk, 1, 30, 125)
         EEG_filtered = np.concatenate((EEG_filtered, filtered))
-    print(EEG_filtered.shape)
+
+    return EEG_filtered
+
+
+def main():
+    EEG1 , EEG2 = read_data()
+
+    EEG1_filtered = filtering_and_processing(EEG1)
+    EEG2_filtered = filtering_and_processing(EEG2)
+
+    print(EEG1_filtered.shape)
 
 
 
     plt.subplot(211)
-    plt.plot(EEG2[:5000])
+    plt.plot(EEG1[:2000])
     plt.subplot(212)
-    plt.plot(EEG_filtered[:5000])
+    plt.plot(EEG1_filtered[:2000])
+
+    plt.figure()
+    plt.subplot(211)
+    plt.plot(EEG2[:2000])
+    plt.subplot(212)
+    plt.plot(EEG2_filtered[:2000])
     plt.show()
 
     # print(EEG2[150000:150200])
