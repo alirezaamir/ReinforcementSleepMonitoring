@@ -63,6 +63,8 @@ def predict_ble():
 
     predict = sleep_model.predict(eeg_data)
     predict_class = np.argmax(predict, axis=1)
+    print("predict shape:{}".format(predict.shape))
+    pickle.dump({'predict': predict}, open('../outputs/predict.pickle', 'wb'))
     plt.plot(predict_class)
     plt.show()
 

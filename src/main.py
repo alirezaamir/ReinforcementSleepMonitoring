@@ -7,11 +7,12 @@ import tensorflow as tf
 import utils.get_data as dt
 import utils.models as models
 from sklearn.utils import shuffle
+from sklearn.preprocessing import scale
 from tensorflow.keras.utils import to_categorical
 import datetime
 
 OUTPUT_NUM = 5
-version_code = 4
+version_code = 5
 
 
 def training():
@@ -25,7 +26,10 @@ def training():
 
     for partition in range(160):
         X_train, y_train = dataset.get_eeg_data(partition % 32, data_type='train')
+        X_train = scale(X_train, axis =1)
+        print("std:{}".format(np.std(X_train[1,:])))
         X_val, y_val = dataset.get_eeg_data(np.random.randint(16), data_type='validation')
+        X_val = scale(X_val, axis=1)
         X_train, y_train = shuffle(X_train, to_categorical(y_train, OUTPUT_NUM))
         y_val = to_categorical(y_val, OUTPUT_NUM)
 
