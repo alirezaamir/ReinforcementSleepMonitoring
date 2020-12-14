@@ -71,7 +71,7 @@ def filtering_and_processing(signal):
         EEG_filtered = np.concatenate((EEG_filtered, filtered))
 
     EEG_filtered = preprocessing.scale(EEG_filtered)
-    EEG_filtered = (EEG_filtered * 40) + 1
+    # EEG_filtered = (EEG_filtered * 40) + 1
     print("mean={}, std={}".format(np.mean(EEG_filtered), np.std(EEG_filtered)))
     return EEG_filtered
 
